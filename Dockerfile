@@ -27,6 +27,8 @@ RUN R -e 'install.packages(c(\
 
 # copy the app directory into the image
 COPY ./* /srv/shiny-server/
+RUN mkdir -p /srv/shiny-server/data/
+COPY ./data/* /srv/shiny-server/data/
 
 # run app
 CMD ["/usr/bin/shiny-server"]
