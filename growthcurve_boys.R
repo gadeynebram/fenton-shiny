@@ -37,11 +37,11 @@ boys_all_gather <- boys_all %>% gather(key = annotation, value = value, P03:P97,
 write_csv(boys_all_gather, "./data/boys_all.csv")
 write_csv(boys_all, "./data/boys_all_spread.csv")
 
-ggplot(data = boys_all_gather %>% filter(type == "weight"), aes(x = `Compl weeks`, y = as.numeric(value), linetype = annotation, shape = type))  + 
+ggplot(data = boys_all_gather %>% dplyr::filter(type == "weight"), aes(x = `Compl weeks`, y = as.numeric(value), linetype = annotation, shape = type))  + 
   geom_line() + theme_bw()  + scale_x_continuous(breaks=seq(22, 42, 1), name = "PML") +
   scale_y_continuous(breaks=seq(0, 5000, 200),limits = c(0,5000), name = "gram")
 
-ggplot(data = boys_all_gather %>% filter(type  %in% c("HC","length") ), aes(x = `Compl weeks`, y = as.numeric(value), linetype = annotation, col = type))  + 
+ggplot(data = boys_all_gather %>% dplyr::filter(type  %in% c("HC","length") ), aes(x = `Compl weeks`, y = as.numeric(value), linetype = annotation, col = type))  + 
   geom_line() + theme_bw() + scale_y_continuous(breaks=seq(18, 60, 5), name = "centimeter") +
   scale_x_continuous(breaks=seq(22, 42, 1), name = "PML") #+ facet_wrap(~ type, ncol = 1, scales = "free") #+ ylim(0,5)
 

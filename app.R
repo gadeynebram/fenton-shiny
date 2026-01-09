@@ -225,12 +225,12 @@ server <- function(input, output, session) {
     df <- newData()$df
     
     df_spread_measure <-
-      df %>% filter(annotation == "measure")  %>% spread(key = annotation, value = value) %>% select(-c(L, M, S))
+      df %>% dplyr::filter(annotation == "measure")  %>% spread(key = annotation, value = value) %>% select(-c(L, M, S))
     df_spread_measure$PML_orig <- df_spread_measure$PML
     df_spread_measure$PML <- round(df_spread_measure$PML, 2)
     df_spread_measure$annotation <- "measure"
     df_spread_LMS <-
-      df %>% filter(annotation != "measure")  %>% spread(key = annotation, value = value)
+      df %>% dplyr::filter(annotation != "measure")  %>% spread(key = annotation, value = value)
     df_spread_LMS$PML <- round( df_spread_LMS$PML, 2)
     df_spread_all <- left_join(df_spread_LMS, df_spread_measure)
     df_spread_all$P_measure <-
@@ -239,13 +239,13 @@ server <- function(input, output, session) {
             df_spread_all$S,
             X = df_spread_all$measure)
     df_spread_all <-
-      df_spread_all %>% filter(annotation == "measure") %>% select(c(PML_orig, P_measure, measure, type))
+      df_spread_all %>% dplyr::filter(annotation == "measure") %>% select(c(PML_orig, P_measure, measure, type))
     df_spread_all <-
       df_spread_all %>% mutate(measurement = type, GA = PML_orig,
                                Percentile = P_measure,
                                value = measure) %>% select(-c(type, PML_orig, P_measure, measure))
     df_spread_all <-
-      df_spread_all %>% filter(value > 0) %>% mutate(Percentile = Percentile*100) %>% arrange(measurement, GA)
+      df_spread_all %>% dplyr::filter(value > 0) %>% mutate(Percentile = Percentile*100) %>% arrange(measurement, GA)
     df_spread_all <- df_spread_all %>% mutate_if(is.numeric, ~ round(., 2))
     DT::datatable({
       df_spread_all
@@ -284,7 +284,7 @@ server <- function(input, output, session) {
     df <- newData()$df
     
     ggplot(
-      data = df %>% filter(type == "weight", annotation != "measure"),
+      data = df %>% dplyr::filter(type == "weight", annotation != "measure"),
       aes(
         x = PML,
         y = as.numeric(value),
@@ -294,7 +294,7 @@ server <- function(input, output, session) {
       theme_bw() +
       geom_line() +
       geom_point(
-        data = df %>% filter(type == "weight", annotation == "measure", value > 0),
+        data = df %>% dplyr::filter(type == "weight", annotation == "measure", value > 0),
         aes(
           y = as.numeric(value),
           x = PML,
@@ -341,7 +341,7 @@ server <- function(input, output, session) {
     df <- newData()$df
     
     ggplot(
-      data = df %>% filter(type  %in% c("length"), annotation != "measure", value > 0),
+      data = df %>% dplyr::filter(type  %in% c("length"), annotation != "measure", value > 0),
       aes(
         x = PML,
         y = as.numeric(value),
@@ -350,7 +350,7 @@ server <- function(input, output, session) {
     )  +
       geom_line() +
       geom_point(
-        data = df %>% filter(type == "length", annotation == "measure", value > 0),
+        data = df %>% dplyr::filter(type == "length", annotation == "measure", value > 0),
         aes(
           y = as.numeric(value),
           x = PML,
@@ -397,7 +397,7 @@ server <- function(input, output, session) {
     df <- newData()$df
     
     ggplot(
-      data = df %>% filter(type  %in% c("HC"), annotation != "measure"),
+      data = df %>% dplyr::filter(type  %in% c("HC"), annotation != "measure"),
       aes(
         x = PML,
         y = as.numeric(value),
@@ -406,7 +406,7 @@ server <- function(input, output, session) {
     )  +
       geom_line() +
       geom_point(
-        data = df %>% filter(type == "HC", annotation == "measure", value > 0),
+        data = df %>% dplyr::filter(type == "HC", annotation == "measure", value > 0),
         aes(
           y = as.numeric(value),
           x = PML,
