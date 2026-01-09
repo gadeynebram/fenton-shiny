@@ -2,6 +2,9 @@ param(
     [string]$datadir = "S:\IZDev\Fenton"
 )
 
+# Stop script execution on any error
+$ErrorActionPreference = "Stop"
+
 # Check if the data directory exists
 if (-not (Test-Path -Path $datadir -PathType Container)) {
     Write-Error "Data directory not found: $datadir"
@@ -13,8 +16,12 @@ Write-Host "Copying CSV files from '$datadir' to '.\data'..."
 Copy-Item -Path "$datadir\*.csv" -Destination ".\data\" -Force
 Write-Host "CSV files copied successfully."
 
+# Start the podman machine
+podman machine start
+
 # First ensure that the container can be build and tag it.
 podman build --no-cache -t uzgizshinyapps.azurecr.io/fenton .
+if ($LASTEXITCODE -ne 0) { throw "Podman build failed" }
 
 # Login to azure
 az login
