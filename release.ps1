@@ -1,5 +1,6 @@
 param(
-    [string]$datadir = "S:\IZDev\Fenton"
+    [string]$datadir = "S:\IZDev\Fenton",
+    [string]$tag = "latest"
 )
 
 # Stop script execution on any error
@@ -20,7 +21,7 @@ Write-Host "CSV files copied successfully."
 podman machine start
 
 # First ensure that the container can be build and tag it.
-podman build --no-cache -t uzgizshinyapps.azurecr.io/fenton .
+podman build --no-cache -t uzgizshinyapps.azurecr.io/fenton:$tag .
 if ($LASTEXITCODE -ne 0) { throw "Podman build failed" }
 
 # Login to azure
@@ -32,4 +33,7 @@ $token = az acr login --name uzgizshinyapps --expose-token --output tsv --query 
 $token | podman login --username 00000000-0000-0000-0000-000000000000 --password-stdin uzgizshinyapps.azurecr.io
 
 # push the tagged image.
-podman push uzgizshinyapps.azurecr.io/fenton
+Write-Host "Pushing image to Azure Container Registry with tag '$tag'..."
+podman push uzgizshinyapps.azurecr.io/fenton:$tag
+if ($LASTEXITCODE -ne 0) { throw "Podman push failed for '$tag' tag" }
+Write-Host "Successfully pushed image with tag '$tag'" -ForegroundColor Green
