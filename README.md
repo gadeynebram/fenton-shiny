@@ -25,6 +25,16 @@ The raw data (L,M,S values) was kindly shared by dr. Tanis Fenton (tfenton@ucalg
 
 After obtaining the data, the Excel sheet need to be reworked so that it follows the format of the csv files in the `data` folder in this github repository (I have included the first 2 lines of my reworked csv files as example). After obtaining these csv files, reworked datafiles (containing P03 > P97 threshold) can be obtained with `growthcurves_*.R`. 
 
+## Development Setup
+
+After cloning the repository, run the initialization script to prevent git from tracking local changes to the CSV data files:
+
+```powershell
+.\init_repo.ps1
+```
+
+This configures git to keep the CSV files in the repository but ignore any local modifications you make to them during development.
+
 ## Installation
 
 The app can be used at rubenvp.shinyapps.io/fenton or self hosted through Docker. 
@@ -60,6 +70,32 @@ or
 
 ```
 server-ip:3838
+```
+
+## Release and Deployment
+
+For deploying to Azure Container Registry, use the `release.ps1` script:
+
+```powershell
+.\release.ps1
+```
+
+This script performs the following steps:
+1. Copies fresh CSV data files from the configured source directory (default: `S:\IZDev\Fenton`) to `.\data\`
+2. Starts the Podman machine
+3. Builds a fresh Docker image without cache: `uzgizshinyapps.azurecr.io/fenton`
+4. Authenticates with Azure CLI and Azure Container Registry
+5. Pushes the image to Azure Container Registry
+
+**Prerequisites:**
+- Podman installed and configured
+- Azure CLI (`az`) installed and authenticated
+- Access to the Azure Container Registry `uzgizshinyapps`
+- Access to the source data directory
+
+To use a different data source directory:
+```powershell
+.\release.ps1 -datadir "C:\path\to\data"
 ```
 
 ## Disclaimer
