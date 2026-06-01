@@ -1,33 +1,32 @@
-# Example shiny app docker file
-# https://blog.sellorm.com/2021/04/25/shiny-app-in-docker/
+# Fenton NICU growth-curve Shiny app
+# https://github.com/rmvpaeme/fenton-shiny
 
-# get shiny server and R from the rocker project
-FROM rocker/shiny:4.3.0
+FROM rocker/shiny:4.4.2
 
-# system libraries
-# Try to only install system libraries you actually need
-# Package Manager is a good resource to help discover system deps
+# system libraries required by tidyverse / readxl
 RUN apt-get update && apt-get install -y \
     libcurl4-gnutls-dev \
-    libssl-dev libmagic-dev
-  
+    libssl-dev \
+    libxml2-dev \
+    libmagic-dev \
+  && rm -rf /var/lib/apt/lists/*
 
-# install R packages required 
-# Change the packages list to suit your needs
+# R packages (pinned to a Posit Package Manager snapshot for reproducibility)
 RUN R -e 'install.packages(c(\
               "shiny", \
               "tidyverse", \
-              "shinythemes", \
-              "DT", \
-              "shinyTime" \
-            ) \
+              "readxl", \
+              "bslib", \
+              "shiny.i18n", \
+              "shinycssloaders", \
+              "scales", \
+              "plotly", \
+              "DT" \
+            ), \
+            repos="https://packagemanager.posit.co/cran/__linux__/jammy/2024-12-01"\
           )'
 
+# copy app (www/, data/, app.R, …); see .dockerignore for exclusions
+COPY . /srv/shiny-server/
 
-# copy the app directory into the image
-COPY ./* /srv/shiny-server/
-RUN mkdir -p /srv/shiny-server/data/
-COPY ./data/* /srv/shiny-server/data/
-
-# run app
 CMD ["/usr/bin/shiny-server"]
